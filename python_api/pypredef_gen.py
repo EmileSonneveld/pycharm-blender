@@ -256,6 +256,10 @@ def rst2list(doc):
         #                                                  with "<TypeName>"
         if line.startswith(".. method::") or line.startswith(".. function::") or line.startswith(".. classmethod::"):
             prototype = (line.split("::",1)[1]).lstrip(" ")
+            #exit()
+            #if line.startswith(".. method::"):
+            #    prototype = "self, "
+                #prototype.insert(0, "self")
             last_entry = "@def"
             definition["@def"].setdefault("prototype",prototype)
         elif line.startswith(":arg"):
@@ -459,7 +463,9 @@ def rna2list(info):
         definition.setdefault("@returns",{"name" : "returns", "description" : info.get_type_description(as_ret = True), "ord" : 1})
 
     elif type(info) == rna_info.InfoFunctionRNA:
-        args_str = ", ".join(prop.get_arg_default(force=False) for prop in info.args)
+        tmpArgs = list(prop.get_arg_default(force=False) for prop in info.args)
+        tmpArgs.insert(0, "self")
+        args_str = ", ".join(tmpArgs)
         prototype = "{0}({1})".format(info.identifier, args_str)
         definition["@def"].setdefault("prototype",prototype)
         if info.is_classmethod: definition["@def"].setdefault("decorator","@classmethod\n")
